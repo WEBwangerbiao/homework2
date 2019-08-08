@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+      var data = [{
+                name: '小王',
+                age: 18,
+            },
+            {
+                name: '小李',
+                age: 25,
+            },
+            {
+                name: '小刘',
+                age: 87,
+            },
+            {
+                name: '小苗',
+                age: 24,
+            },
+            {
+                name: '小何',
+                age: 68,
+            },
+            {
+                name: '大傻',
+                age: 75,
+            },
+        ]
+        //创建canvas元素
+        let canvas = document.createElement('canvas');
+        //设置宽高边框
+        canvas.width = 500;
+        canvas.height = 500;
+        canvas.style.border = '1px solid #ccc';
+        //将canvas元素添加到页面中
+        document.body.appendChild(canvas);
+
+        //获取canvas上下文
+        var ctx = canvas.getContext('2d');
+        // 最大值  重新排序
+        let maxAge = JSON.parse(JSON.stringify(data)).sort((a, b) => b.age - a.age)[0].age;
+        // 颜色
+        let colorArr = data.map(() => ranColor());
+        // 边界值
+        let margin = 400 / (data.length + 1);
+
+        // 位移初始点
+        ctx.translate(50, 450);
+
+        // 封装
+        function xian() {
+            // 开始的点到结束的点
+            ctx.moveTo(0, 0)
+            ctx.lineTo(0, -400);
+
+            ctx.moveTo(0, 0);
+            ctx.lineTo(400, 0);
+            // 描边
+            ctx.stroke();
+        }
+
+        // 封装
+        function keD() {
+            // 存档 保存当前的状态
+            ctx.save();
+            // 设置字体样式
+            ctx.textAlign = 'end';
+            ctx.textBaseline = 'middle';
+            //画刻度
+            for (let i = 50; i <= 400; i += 50) {
+                // 开启新路径
+                ctx.beginPath();
+                ctx.moveTo(-3, -i);
+
+                ctx.lineTo(0, -i);
+                ctx.stroke();
+                // 写入              X       Y    值    
+                ctx.fillText((i / 400) * maxAge, -3, -i);
+            }
+            // 返回上级状态
+            ctx.restore();
+        }
+
+
+        function xuan(e) {
+            ctx.textAlign = 'center';
+            for (let i = 0; i < data.length; i++) {
+                ctx.save();
+                ctx.fillStyle = colorArr[i];
+                let h = data[i].age / maxAge * 400;
+                ctx.beginPath();
+                ctx.rect(margin * (i + 1) - 10, 0, 25, -h);
+                ctx.closePath();
+                ctx.fill();
+
+                if (e && ctx.isPointInPath(e.offsetX, e.offsetY)) {
+                    ctx.fillStyle = 'red';
+
+                    ctx.fillText(data[i].age, margin * (i + 1), -h - 5);
+                    ctx.fill();
+                   
+                }
+                ctx.fillText(data[i].name, margin * (i + 1), 15);
+                ctx.restore();
+            }
+        }
+
+        xian();
+        keD();
+        xuan();
+        canvas.onmousemove = function (e) {
+            ctx.clearRect(-50, -450, 500, 500);
+            xian();
+            keD();
+            xuan(e);
+        }
+
+        function ranColor() {
+            return `rgba(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},.5)`
+        }
+    
+    </script>
+</body>
+</html>
